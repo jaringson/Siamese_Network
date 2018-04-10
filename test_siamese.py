@@ -34,24 +34,28 @@ def run_testing():
 
     raw_data = {'file_name':[]}
 
+    
+
     for idx, row in df.iterrows():
-
-        train_file = row['file_name']
-
         label = row['id']
         raw_data[str(label)] = []
+    # print(train_file)
+    # print(label)
 
+    for folder in all_folders:
+        
+        if not osp.isdir(folder):
+            continue
+        for test_file in glob.glob(osp.join(folder + FLAGS.load_run, '*'+ FLAGS.extension)):
+            raw_data['file_name'].append(test_file)
+            for idx, row in df.iterrows():
 
-        # print(train_file)
-        # print(label)
+                train_file = row['file_name']
 
-        for folder in all_folders:
-            
-            if not osp.isdir(folder):
-                continue
-            for test_file in glob.glob(osp.join(folder + FLAGS.load_run, '*'+ FLAGS.extension)):
+                label = row['id']
+                
                 print(test_file)
-                raw_data['file_name'].append(test_file)
+                
                     
                 train_img = Image.open(train_file).convert('L')
                 train_img = train_img.resize((50,50), Image.ANTIALIAS)
@@ -72,15 +76,16 @@ def run_testing():
                 #print(en_out[0][0][0])
                 raw_data[str(label)].append(en_out[0][0][0])
 
-                break
-    print(raw_data)
-    print(raw_data.keys())
-    for i in raw_data.keys():
-        print(len(raw_data[i]))
-    df = pd.DataFrame(raw_data, columns = raw_data.keys())
+                
+    # print(raw_data)
+    # print(raw_data.keys())
+    all_keys = ['file_name']
+    for i in range(len(raw_data.keys())-1):
+        all_keys.append(str(i))
+        # print(len(raw_data[i]))
+    df = pd.DataFrame(raw_data, columns = all_keys)
     df.to_csv(osp.join(FLAGS.testing_path, FLAGS.result_file))
 
-    summary_writer.close()
     sess.close()
 
 
