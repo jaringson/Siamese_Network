@@ -29,7 +29,7 @@ def run_sorting():
 			os.makedirs(FLAGS.out_dir+'/'+label)
 
 
-		copyfile(file, FLAGS.out_dir+'/'+label+'/'+ntpath.basename(file))
+		copyfile(file, FLAGS.out_dir+'/'+label+'/'+idx+'.png')
 
 	# for idx, row in df.iterrows():
 	# 	print(row[2:len(df.columns.values)-2])
