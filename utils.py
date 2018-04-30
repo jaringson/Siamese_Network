@@ -79,7 +79,7 @@ class BatchMaker(object):
 				#image_num = random.randrange(LABELS[label]['tot_num'])
 				image = LABELS['file_name'][label_num]
 				try:
-					thr_output = paste_vary.run(image)
+					thr_output = paste_vary.run(image, random_skew=True, crop=265)
 					four_output = [x/255.0 for x in thr_output]
 					img = Image.open(image)
 					

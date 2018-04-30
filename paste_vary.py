@@ -49,7 +49,7 @@ def place_background(image, from_center, rotate, scale_rand):
     return background.convert('L')
 
 
-def run(image, random_skew = False, random_place = False, from_center = 0, rotate = False, scale_rand = True):
+def run(image, random_skew = False, random_place = False, from_center = 0, rotate = False, scale_rand = True, crop=-1):
 
     img = []
 
@@ -58,6 +58,11 @@ def run(image, random_skew = False, random_place = False, from_center = 0, rotat
     else:
         img = Image.open(image).convert('L')
 
+    #Cropping only for Certain Pratt data
+    if crop != -1:
+        width = img.size[0]
+        height = img.size[1]
+        img = img.crop((0,0,width-crop,height)) 
     img = img.resize((50, 50), Image.ANTIALIAS)
 
     img.save('./tf_logs/temp.jpg')

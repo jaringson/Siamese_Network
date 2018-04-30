@@ -29,7 +29,7 @@ def run_sorting():
 			os.makedirs(FLAGS.out_dir+'/'+label)
 
 
-		copyfile(file, FLAGS.out_dir+'/'+label+'/'+idx+'.png')
+		copyfile(file, FLAGS.out_dir+'/'+label+'/'+str(idx)+'.jpg')
 
 	# for idx, row in df.iterrows():
 	# 	print(row[2:len(df.columns.values)-2])
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     parser.add_argument(
       '--in_file',
       type=str,
-      default="./testing.csv",
+      default="./testing_data/testing.csv",
       help='Infile name.'
     )
 

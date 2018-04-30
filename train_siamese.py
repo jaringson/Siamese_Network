@@ -95,7 +95,7 @@ if __name__ == "__main__":
     parser.add_argument(
       '--iterations',
       type=str,
-      default=1000,
+      default=3000,
       help='Number of training iterations.'
     )
     parser.add_argument(
