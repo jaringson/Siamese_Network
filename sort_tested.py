@@ -1,3 +1,9 @@
+###
+# This script allows for the sorting of the testing files to
+# different folders. The 
+#
+###
+
 from __future__ import print_function
 
 import pandas as pd

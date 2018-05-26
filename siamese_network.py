@@ -1,3 +1,10 @@
+###
+# The Residual Siamese network is accessed through this file.
+# A possible place to experimentally optimize include line 49 
+# to different a learning rate.
+#
+###
+
 from __future__ import print_function
 from __future__ import division
 

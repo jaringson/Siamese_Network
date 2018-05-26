@@ -1,3 +1,9 @@
+###
+# This code randomly places an image on a white background and then 
+# randomly skews the image. The skewing uses ImageMagick and so saves
+# a temporary file to disk and then loads it again.
+#
+###
 from PIL import Image
 from random import randint
 import numpy as np
@@ -45,6 +51,7 @@ def place_background(image, from_center, rotate, scale_rand):
         
         background.paste(foreground, (p_w,p_h), foreground)
 
+    ### For debugging
     #background.convert('L').show()
     return background.convert('L')
 
@@ -58,18 +65,19 @@ def run(image, random_skew = False, random_place = False, from_center = 0, rotat
     else:
         img = Image.open(image).convert('L')
 
-    #Cropping only for Certain Pratt data
+    ### Cropping only for Certain Pratt data.
+    ### Please don't use for other data.
     if crop != -1:
         width = img.size[0]
         height = img.size[1]
         img = img.crop((0,0,width-crop,height)) 
     img = img.resize((50, 50), Image.ANTIALIAS)
 
+    ### Necessary for ImageMagick to work
     img.save('./tf_logs/temp.jpg')
     points = 4
     all_points = []
     
-    ## NEW OPTION
     quad_c1 = randint(0,4)
     quad_c2 = quad_c1
     while quad_c2 == quad_c1:
@@ -79,36 +87,39 @@ def run(image, random_skew = False, random_place = False, from_center = 0, rotat
     if random_skew:
         c1_2 = [quad_c1, quad_c2]
 
+    ### This part chooses two points in diffent quadurants of the image 
+    ### and randomly chooses where the points will be skewed to.
     for c in c1_2:
         if c == 0:
             img = np.array(img).flatten()
             list = img.tolist()
             return list
         if c == 1:
-            # 1st Quad
+            ### 1st Quad Skewing
             all_points.append(randint(3*img.size[0]/16,4*img.size[0]/16))
             all_points.append(randint(3*img.size[1]/16,4*img.size[1]/16))
             all_points.append(randint(2*img.size[0]/16,3*img.size[0]/16))
             all_points.append(randint(2*img.size[1]/16,3*img.size[1]/16))
         if c == 2:
-            # 2nd Quad
+            ### 2nd Quad Skewing
             all_points.append(randint(8*img.size[0]/16,9*img.size[0]/16))
             all_points.append(randint(7*img.size[1]/16,8*img.size[1]/16))
             all_points.append(randint(9*img.size[0]/16,10*img.size[0]/16))
             all_points.append(randint(6*img.size[1]/16,7*img.size[1]/16))
         if c == 3:
-            # 3rd Quad
+            ### 3rd Quad Skewing
             all_points.append(randint(7*img.size[0]/16,8*img.size[0]/16))
             all_points.append(randint(8*img.size[1]/16,9*img.size[1]/16))
             all_points.append(randint(6*img.size[0]/16,7*img.size[0]/16))
             all_points.append(randint(9*img.size[1]/16,10*img.size[1]/16))
         if c == 4:
-            # 4th Quad
+            ### 4th Quad Skewing
             all_points.append(randint(4*img.size[0]/16,5*img.size[0]/16))
             all_points.append(randint(4*img.size[1]/16,5*img.size[1]/16))
             all_points.append(randint(5*img.size[0]/16,6*img.size[0]/16))
             all_points.append(randint(5*img.size[1]/16,6*img.size[1]/16))
     
+    ### ImageMagick works through saving to disk
     os.system("convert ./tf_logs/temp.jpg \
 	-colorspace  RGB\
 	-distort Shepards \
@@ -124,4 +135,5 @@ def run(image, random_skew = False, random_place = False, from_center = 0, rotat
 
 
 if __name__ == '__main__':
-    run('11.jpg', from_center=1)
+    ### For debugging. Modify as needed. 
+    run('test.jpg', from_center=1)
