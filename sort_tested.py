@@ -15,33 +15,32 @@ def run_sorting():
 		os.makedirs(FLAGS.out_dir)
 
 	df = pd.read_csv(FLAGS.in_file)
-	# print(df.columns.values)
 
-	df1 = df[df.columns.values[2:len(df.columns.values)]]
-	all_mins = df1.idxmin(1)
+	for index, row in df.iterrows():
+		file = row['file_name']
+		min_val = float("inf")
+		min_i = -1
+		min_val2 = float("inf")
+		min_i2 = -1
+		for i in range(len(df.columns.values)-2):
+			if row[str(i)] < min_val:
+				min_i = i
+				min_val = row[str(i)]
+		for i in [x for x in xrange(len(df.columns.values)-2) if x != min_i]:
+			if row[str(i)] < min_val2:
+				min_i2 = i
+				min_val2 = row[str(i)]
+		
 
-	# print(df['file_name'])
+		if abs(min_val-min_val2) < FLAGS.threshold:
+			if not os.path.exists(FLAGS.out_dir+'/99'):
+				os.makedirs(FLAGS.out_dir+'/99')
+			copyfile(file, FLAGS.out_dir+'/99/'+str(index)+'.jpg')
+		else:
+			if not os.path.exists(FLAGS.out_dir+'/'+str(min_i)):
+				os.makedirs(FLAGS.out_dir+'/'+str(min_i))
+			copyfile(file, FLAGS.out_dir+'/'+str(min_i)+'/'+str(index)+'.jpg')
 
-	for idx, file in enumerate(df['file_name']):
-		# print(file)
-		label = all_mins[idx]
-		if not os.path.exists(FLAGS.out_dir+'/'+label):
-			os.makedirs(FLAGS.out_dir+'/'+label)
-
-
-		copyfile(file, FLAGS.out_dir+'/'+label+'/'+str(idx)+'.jpg')
-
-	# for idx, row in df.iterrows():
-	# 	print(row[2:len(df.columns.values)-2])
-	# 	file_name = row['file_name']
-
-	# 	# print(min(row[2:len(df.columns.values)-2]))
-	
-
-
-
-	# 	# for i in range(len(df.columns.values)-2):
-	# 	# 	print(df.columns.values[i])
 	
 
 
@@ -61,6 +60,13 @@ if __name__ == "__main__":
       type=str,
       default="./output",
       help='Path to output directory.'
+    )
+
+    parser.add_argument(
+      '--threshold',
+      type=str,
+      default=0.005,
+      help='Threshold value.'
     )
 
     FLAGS, unparsed = parser.parse_known_args()
