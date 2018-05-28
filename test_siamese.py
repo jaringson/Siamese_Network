@@ -1,7 +1,14 @@
+###
+# This script takes the trained information from train_siamese,
+# which is saved in the files '/tf_logs/siamese*', and the training data,
+# which should be located at 'testing_data/load1', 'testing_data/load2',
+# etc. It will then output a 'testing.csv' file which will contain the results.
+###
+
 from __future__ import print_function
 from __future__ import division
 
-from pdb import set_trace as debugger
+# from pdb import set_trace as debugger
 from tensorflow.python.training import moving_averages
 
 import tensorflow as tf

@@ -1,6 +1,6 @@
 ###
 # This script allows for the sorting of the testing files to
-# different folders. The 
+# different folders. It uses the output test_siamese to sort images.
 #
 ###
 

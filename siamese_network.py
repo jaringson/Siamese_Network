@@ -8,7 +8,7 @@
 from __future__ import print_function
 from __future__ import division
 
-from pdb import set_trace as debugger
+# from pdb import set_trace as debugger
 from tensorflow.python.training import moving_averages
 
 import tensorflow as tf
@@ -26,7 +26,7 @@ class ModeSiameseNetwork(object):
 
         tf.reset_default_graph()
 
-        # Create model
+        ### Create model
         self.x1 = tf.placeholder(tf.float32, [None, xsize* ysize])
         self.x2 = tf.placeholder(tf.float32, [None, xsize* ysize])
         x1_r = tf.reshape(self.x1, [-1, xsize, ysize])
@@ -38,14 +38,14 @@ class ModeSiameseNetwork(object):
             scope.reuse_variables()
             siamese2 = self.residual_network(x2_r)
 
-        # Calculate energy, loss, and accuracy
+        ### Calculate energy, loss, and accuracy
         self.margin = tf.placeholder(tf.float32)
         self.y_ = tf.placeholder(tf.float32, [None, 1])
         self.energy_op = self.compute_energy(siamese1, siamese2)
         self.loss_op = self.compute_loss(self.y_, self.energy_op)
         self.accuracy_op = self.compute_accuracy(self.y_, self.energy_op)
 
-        # setup siamese network
+        ### setup siamese network
         self.train_step = tf.train.AdamOptimizer(1e-4, beta1=0.5).minimize(self.loss_op)
 
        
@@ -53,7 +53,7 @@ class ModeSiameseNetwork(object):
 
     def global_avg_pool(self, in_var, name='global_pool'):
         assert name is not None, 'Op name should be specified'
-        # start global average pooling
+        ### start global average pooling
         with tf.name_scope(name):
             input_shape = in_var.get_shape()
             assert len(input_shape) == 4, 'Incoming Tensor shape must be 4-D'
@@ -66,7 +66,7 @@ class ModeSiameseNetwork(object):
                 padding='SAME', name=None):
         assert name is not None, 'Op name should be specified'
         assert strides is not None, 'Strides should be specified when performing max pooling'
-        # start max pooling
+        ### start max pooling
         with tf.name_scope(name):
             input_shape = in_var.get_shape()
             assert len(input_shape) == 4, 'Incoming Tensor shape must be 4-D'
@@ -79,7 +79,7 @@ class ModeSiameseNetwork(object):
                     padding='SAME', name=None):
         assert name is not None, 'Op name should be specified'
         assert strides is not None, 'Strides should be specified when performing average pooling'
-        # start average pooling
+        ### start average pooling
         with tf.name_scope(name):
             input_shape = in_var.get_shape()
             assert len(input_shape) == 4, 'Incoming Tensor shape must be 4-D'
@@ -90,7 +90,7 @@ class ModeSiameseNetwork(object):
     def conv_2d(self, in_var, out_channels, filters=[3,3], strides=[1,1,1,1], 
                 padding='SAME', name=None):
         assert name is not None, 'Op name should be specified'
-        # start conv_2d
+        ### start conv_2d
         with tf.name_scope(name):
             k_w, k_h = filters  # filter width/height
             W = tf.get_variable(name + "_W", [k_h, k_w, in_var.get_shape()[-1], out_channels],
@@ -111,36 +111,36 @@ class ModeSiameseNetwork(object):
             resnet = in_var
             in_channels = in_var.get_shape()[-1].value
 
-            # multiple layers for a single residual block
+            ### multiple layers for a single residual block
             for i in xrange(nb_blocks):
                 identity = resnet
                 ##################
-                # apply convolution
+                ### apply convolution
                 resnet = self.conv_2d(resnet, out_channels, 
                                 strides=strides if not downsample else downsample_strides, 
                                 name='{}_conv2d_{}'.format(name, i))
-                # normalize batch before activations
+                ### normalize batch before activations
                 if batch_norm:
                     resnet = self.batch_normalization(resnet, name='{}_batch_norm{}'.format(name, i))
-                # apply activation function
+                ### apply activation function
                 resnet = tf.nn.relu(resnet)
-                # apply convolution again
+                ### apply convolution again
                 resnet = self.conv_2d(resnet, out_channels, strides=strides, name='{}_conv2d_{}{}'.format(name, i, 05))
-                # normalize batch before activations or previous convolution
+                ### normalize batch before activations or previous convolution
                 if batch_norm:
                     resnet = self.batch_normalization(resnet, name='{}_batch_norm{}'.format(name, i), reuse=True)
-                # apply activation function
+                ### apply activation function
                 resnet = tf.nn.relu(resnet)
                 ##################
-                # downsample
+                ### downsample
                 if downsample:
                     identity = self.avg_pool_2d(identity, strides=downsample_strides, name=name+'_avg_pool_2d')
-                # projection to new dimension by padding
+                ### projection to new dimension by padding
                 if in_channels != out_channels:
                     ch = (out_channels - in_channels)//2
                     identity = tf.pad(identity, [[0, 0], [0, 0], [0, 0], [ch, ch]])
                     in_channels = out_channels
-                # add residual
+                ### add residual
                 resnet = resnet + identity
 
             return resnet
@@ -148,7 +148,7 @@ class ModeSiameseNetwork(object):
     def batch_normalization(self, in_var, beta=0.0, gamma=1.0, epsilon=1e-5, 
                             decay=0.9, name=None, reuse=None):
         assert name is not None, 'Op name should be specified'
-        # start batch normalization with moving averages
+        ### start batch normalization with moving averages
         input_shape = in_var.get_shape().as_list()
         input_ndim = len(input_shape)
 
@@ -168,7 +168,7 @@ class ModeSiameseNetwork(object):
                                 input_shape[-1:], initializer=tf.ones_initializer,
                                 trainable=False)
 
-            # define a function to update mean and variance
+            ### define a function to update mean and variance
             def update_mean_var():
                 mean, variance = tf.nn.moments(in_var, axis)
                 update_moving_mean = moving_averages.assign_moving_average(moving_mean, mean, decay)
@@ -176,7 +176,7 @@ class ModeSiameseNetwork(object):
                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):
                     return tf.identity(mean), tf.identity(variance)
 
-            # only update mean and variance with moving average while training
+            ### only update mean and variance with moving average while training
             mean, var = tf.cond(self.is_training, update_mean_var, lambda: (moving_mean, moving_variance))
 
             inference = tf.nn.batch_normalization(in_var, mean, var, beta, gamma, epsilon)
@@ -211,10 +211,10 @@ class ModeSiameseNetwork(object):
         with tf.name_scope('loss'):
             labels_t = y_
             labels_f = tf.subtract(1.0, y_, name="1-y")
-            # compute loss_g and loss_i
+            ### compute loss_g and loss_i
             loss_g = tf.multiply(tf.truediv(2.0, self.margin), tf.pow(energy, 2), name='l_G')
             loss_i = tf.multiply(tf.multiply(2.0, self.margin), tf.exp(tf.multiply(tf.truediv(-2.77, self.margin), energy)), name='l_I')
-            # compute full loss
+            ### compute full loss
             pos = tf.multiply(labels_t, loss_g, name='1-Yl_G')
             neg = tf.multiply(labels_f, loss_i, name='Yl_I')
             _loss = tf.reduce_mean(tf.add(pos, neg), name='loss')

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-'''from tensorflow.python.platform import gfile
-from tensorflow.python.util import compat
-
-import re
-import hashlib'''
+###
+# 'utils.py' is used for the creation of training data. It 
+# uses 'paste_vary.py' to manipulate the images to prevent
+# overfitting.
+###
 
 
 from numpy import array
@@ -21,12 +21,6 @@ import paste_vary
 from scipy.misc import imsave, imshow
 
 import pandas as pd
-
-#imgprocess = imp.TriangleWarp()
-
-#image_dir = '/tf_files/modes/train_modes/'
-#image_dir = './train_modes/'
-#image_dir = './pratt_data_train/'
 
 
 LABELS = {'file_name':[],'id':[]}
@@ -106,6 +100,7 @@ class BatchMaker(object):
 		return output
 
 if __name__ == "__main__":
+	### This is for testing this file's output only
 	bm = BatchMaker('./training_data/as0/load1')
 	out = bm.next_batch(10,1)
 	out2 = bm.next_batch(10,1,out[5])

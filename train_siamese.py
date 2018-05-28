@@ -1,3 +1,10 @@
+###
+# The code in this file alows for the actual training of the network.
+# It uses 'siamese_network.py' to build and train the network and 
+# 'utils.py' to create mini-batches for the creation of actual 
+# training images.
+###
+
 from __future__ import print_function
 from __future__ import division
 
@@ -19,7 +26,7 @@ def run_training():
 
     s_net = ModeSiameseNetwork()
 
-    # prepare tf.session
+    ### prepare tf.session
     sess = tf.Session()
 
     l_summary = tf.summary.scalar('Loss', s_net.loss_op)
